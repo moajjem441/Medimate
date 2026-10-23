@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  passwordHash String
+  role         Role           @default(USER)
+  avatarUrl    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  prescriptions Prescription[]
+  medicines     Medicine[]
+  reminders     Reminder[]
+  medicineLogs  MedicineLog[]
+
+  @@map("users")
+}
+
+model Prescription {
+  id          String     @id @default(uuid())
+  userId      String
+  imageUri    String
+  doctorName  String?
+  clinicName  String?
+  date        DateTime?
+  status      String     @default("COMPLETED") // "PROCESSING", "COMPLETED", "FAILED"
+  rawText     String?
+  notes       String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicines   Medicine[]
+
+  @@map("prescriptions")
+}
+
+model Medicine {
+  id             String        @id @default(uuid())
+  userId         String
+  prescriptionId String?
+  name           String
+  dosage         String
+  frequency      String
+  duration       String?
+  timing         String
+  instructions   String?
+  explanation    String?
+  startDate      DateTime      @default(now())
+  endDate        DateTime?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescription   Prescription? @relation(fields: [prescriptionId], references: [id], onDelete: SetNull)
+  reminders      Reminder[]
+  logs           MedicineLog[]
+
+  @@map("medicines")
+}
+
+model Reminder {
+  id             String        @id @default(uuid())
+  userId         String
+  medicineId     String
+  time           String        // e.g. "08:00 AM" or "20:00"
+  days           String        @default("DAILY")
+  isEnabled      Boolean       @default(true)
+  soundEnabled   Boolean       @default(true)
+  notificationId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicine       Medicine      @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  logs           MedicineLog[]
+
+  @@map("reminders")
+}
+
+model MedicineLog {
+  id            String    @id @default(uuid())
+  userId        String
+  medicineId    String
+  reminderId    String?
+  scheduledTime String?
+  status        String    @default("TAKEN") // "TAKEN", "SKIPPED", "MISSED"
+  takenAt       DateTime  @default(now())
+  notes         String?
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicine      Medicine  @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  reminder      Reminder? @relation(fields: [reminderId], references: [id], onDelete: SetNull)
+
+  @@map("medicine_logs")
+}
+
+model MedicinePrice {
+  id           String   @id @default(uuid())
+  medicineName String
+  genericName  String?
+  dosage       String?
+  brand        String?
+  price        Float
+  currency     String   @default("USD")
+  pharmacy     String
+  inStock      Boolean  @default(true)
+  url          String?
+  lastUpdated  DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("medicine_prices")
+}

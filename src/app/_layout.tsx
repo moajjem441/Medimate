@@ -1,18 +1,92 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { AuthProvider } from '../context/AuthContext';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { LocalizationProvider } from '../context/LocalizationContext';
+import * as SystemUI from 'expo-system-ui';
+import '../global.css';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
-SplashScreen.preventAutoHideAsync();
+function RootNavigation() {
+  const { colors, isDark } = useTheme();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
+  }, [colors.background]);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+          animation: 'slide_from_right',
+        }}
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="prescription/scan"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="prescription/result"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="prescription/details"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="medicine/[id]"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="medicine/add"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="medicine/edit"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="reminder/add"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="reminder/edit"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
+        <Stack.Screen
+          name="admin/index"
+          options={{ headerShown: false }}
+        />
+      </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  useEffect(() => {
+    // Hide native splash once JS loads
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
+
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <LocalizationProvider>
+          <AuthProvider>
+            <RootNavigation />
+          </AuthProvider>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
