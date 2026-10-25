@@ -32,6 +32,7 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     };
   });
 
+  
   const handlePressIn = (event: any) => {
     scale.value = withSpring(scaleTo, { damping: 15, stiffness: 300 });
     opacity.value = withSpring(0.92, { damping: 15, stiffness: 300 });
