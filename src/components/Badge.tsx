@@ -9,6 +9,7 @@ interface BadgeProps {
   dot?: boolean;
 }
 
+
 export const Badge: React.FC<BadgeProps> = ({
   label,
   variant = 'teal',
@@ -17,6 +18,7 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const { isDark } = useTheme();
 
+  
   const getColors = () => {
     if (isDark) {
       switch (variant) {
