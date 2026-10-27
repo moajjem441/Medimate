@@ -64,6 +64,7 @@ export const Button: React.FC<ButtonProps> = ({
     if (isOutline || isGhost) return colors.primary;
     return colors.text;
   };
+  
 
   return (
     <AnimatedPressable
