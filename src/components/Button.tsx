@@ -155,7 +155,7 @@ export const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   baseButton: {
     borderRadius: 999,
-    overflow: 'hidden',
+    overflow:'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
