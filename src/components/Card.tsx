@@ -22,7 +22,7 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const { colors, isDark } = useTheme();
 
-  
+
   const blurIntensity = intensity !== undefined ? intensity : (isDark ? 55 : 40);
   const activeGlow = glowColor || colors.glassGlow;
 
@@ -42,7 +42,8 @@ export const Card: React.FC<CardProps> = ({
       ]}
       {...props}
     >
-      <BlurView
+
+      < BlurView
         intensity={blurIntensity}
         tint={colors.blurTint}
         style={StyleSheet.absoluteFill}
