@@ -77,6 +77,7 @@ export const DisclaimerBanner: React.FC<DisclaimerBannerProps> = ({
               { color: isDark ? colors.textSecondary : isWarning ? '#78350F' : '#134E4A' },
             ]}
           >
+            
             {displayMessage}
           </Text>
         </View>
